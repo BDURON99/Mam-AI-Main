@@ -10,6 +10,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import 'search_page.dart';
+import '../theme.dart';
+
+
+const DEEP_RED_BRAND_COLOR = Color.fromARGB(255, 170, 43, 66);
 
 /// The intro page handles licensing & model download.
 ///
@@ -148,7 +152,7 @@ class _IntroPageState extends State<IntroPage> {
           SizedBox(
             width: 64,
             height: 64,
-            child: CircularProgressIndicator(color: orange),
+            child: CircularProgressIndicator(color: DEEP_RED_BRAND_COLOR),
           ),
         ],
       );
@@ -173,7 +177,7 @@ class _IntroPageState extends State<IntroPage> {
             SizedBox(
               width: 64,
               height: 64,
-              child: CircularProgressIndicator(color: orange),
+            child: CircularProgressIndicator(color: DEEP_RED_BRAND_COLOR),
             )
           ],
         );
@@ -192,9 +196,9 @@ class _IntroPageState extends State<IntroPage> {
           },
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.all(20),
-            backgroundColor: orange,
+            backgroundColor: DEEP_RED_BRAND_COLOR,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5.0),
+              borderRadius: BorderRadius.circular(50),
             ),
             elevation: 2,
           ),
@@ -219,7 +223,7 @@ class _IntroPageState extends State<IntroPage> {
         },
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.all(20),
-          backgroundColor: orange,
+          backgroundColor: DEEP_RED_BRAND_COLOR,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5.0),
           ),
@@ -238,7 +242,7 @@ class _IntroPageState extends State<IntroPage> {
       nextButton = Column(children: [
         Text("Downloading models (${(prog * 100).toStringAsFixed(2)}%)"),
         SizedBox(height: 20),
-        LinearProgressIndicator(value: progress, color: orange)
+        LinearProgressIndicator(value: progress, color: DEEP_RED_BRAND_COLOR)
       ]);
     }
 
@@ -279,11 +283,11 @@ class _IntroPageState extends State<IntroPage> {
                                   ),
                                   const SizedBox(height: 24),
                                   Text(
-                                    'Welcome to MAM-Ai',
+                                    'Welcome to MAM*AI',
                                     style: TextStyle(
                                       fontSize: 28,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.deepOrange,
+                                      color: DEEP_RED_BRAND_COLOR,
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
@@ -315,7 +319,7 @@ class _IntroPageState extends State<IntroPage> {
                                     Image.asset('images/epfl.png', height: 20),
                                     Image.asset('images/light.png', height: 25),
                                     Image.asset('images/swiss_tph.png', height: 25),
-                                    Image.asset('images/d-tree.jpg', height: 25),
+                                    Image.asset('images/d-tree.png', height: 25),
                                     // Add more partners as needed
                                   ],
                                 ),
