@@ -12,7 +12,6 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'search_page.dart';
 import '../theme.dart';
 
-
 const DEEP_RED_BRAND_COLOR = Color.fromARGB(255, 170, 43, 66);
 
 /// The intro page handles licensing & model download.
@@ -47,13 +46,16 @@ class _IntroPageState extends State<IntroPage> {
 
     // We are using a self-signed cert so to trust only that we create our own
     // dio HTTP client and check that the cert matches our self-signed cert
-    String serverCertPem = (await rootBundle.loadString('cert.pem')).replaceAll("\n", "").replaceAll("\r", "").replaceAll(" ", "").trim();
+    String serverCertPem = (await rootBundle.loadString(
+      'cert.pem',
+    )).replaceAll("\n", "").replaceAll("\r", "").replaceAll(" ", "").trim();
 
     final dio = Dio();
     (dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
       final client = HttpClient();
       client.badCertificateCallback = (cert, host, port) {
-        return cert.pem.replaceAll("\n", "").replaceAll(" ", "").trim() == serverCertPem;
+        return cert.pem.replaceAll("\n", "").replaceAll(" ", "").trim() ==
+            serverCertPem;
       };
       return client;
     };
@@ -62,19 +64,19 @@ class _IntroPageState extends State<IntroPage> {
     // String basicAuthHeader = 'Basic ${base64.encode(utf8.encode(basicAuth))}';
 
     // Send the request
-    await dio
-        .download(
-          baseUrl + filename,
-          '${directory.path}/$filename',
-          options: Options(
-            // headers: {"authorization": basicAuthHeader}, // TODO basic auth
-          ),
-          onReceiveProgress: (current, int total) {
-            setState(() {
-              download.current = current;
-              download.total = total;
-            });
+    await dio.download(
+      baseUrl + filename,
+      '${directory.path}/$filename',
+      options: Options(
+        // headers: {"authorization": basicAuthHeader}, // TODO basic auth
+      ),
+      onReceiveProgress: (current, int total) {
+        setState(() {
+          download.current = current;
+          download.total = total;
         });
+      },
+    );
 
     download.finished = true;
   }
@@ -83,8 +85,12 @@ class _IntroPageState extends State<IntroPage> {
 
   /// Total download progress
   double get progress {
-    double total = downloads.values.map((d) => d.total).fold(0, (a, b) => a + b);
-    double current = downloads.values.map((d) => d.current).fold(0, (a, b) => a + b);
+    double total = downloads.values
+        .map((d) => d.total)
+        .fold(0, (a, b) => a + b);
+    double current = downloads.values
+        .map((d) => d.current)
+        .fold(0, (a, b) => a + b);
     return current / total;
   }
 
@@ -96,7 +102,9 @@ class _IntroPageState extends State<IntroPage> {
   /// Asynchronously get the download dir
   Future<Directory> downloadDir() async {
     if (_downloadDir == null) {
-      final dir = Platform.isAndroid ? await getExternalStorageDirectory() : Directory("mock_ext_storage_dir/");
+      final dir = Platform.isAndroid
+          ? await getExternalStorageDirectory()
+          : Directory("mock_ext_storage_dir/");
       setState(() {
         _downloadDir = dir;
       });
@@ -107,12 +115,16 @@ class _IntroPageState extends State<IntroPage> {
 
   bool get downloadsDone {
     if (downloads.isEmpty && _downloadDir != null) {
-      bool done = files.map((file) => io.File("${_downloadDir!.path}/$file").existsSync()).reduce((a, b) => a && b);
+      bool done = files
+          .map((file) => io.File("${_downloadDir!.path}/$file").existsSync())
+          .reduce((a, b) => a && b);
 
       if (done) {
         // TODO do an actual hash here
         // Little bit of a hack over doing a checksum but is is ok for an mvp
-        int fileSize = files.map((file) => io.File("${_downloadDir!.path}/$file").lengthSync()).reduce((a, b) => a + b);
+        int fileSize = files
+            .map((file) => io.File("${_downloadDir!.path}/$file").lengthSync())
+            .reduce((a, b) => a + b);
         if (fileSize == 4564057313) {
           return true;
         }
@@ -129,7 +141,12 @@ class _IntroPageState extends State<IntroPage> {
   bool llmInitialized = false;
 
   /// List of remote model files to download
-  static const List<String> files = ["gemma-3n-E4B-it-int4.task", "sentencepiece.model", "Gecko_1024_quant.tflite", "embeddings.sqlite"];
+  static const List<String> files = [
+    "gemma-3n-E4B-it-int4.task",
+    "sentencepiece.model",
+    "Gecko_1024_quant.tflite",
+    "embeddings.sqlite",
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +155,8 @@ class _IntroPageState extends State<IntroPage> {
     // Our background colour
     Color orange = Color(0xffcc5500);
 
-    if (_downloadDir == null) { // Download dir loading - show loading spinner
+    if (_downloadDir == null) {
+      // Download dir loading - show loading spinner
       // Start background fetching of the download dir - we can't get it
       // synchronously as the Dart API is a Future
       // We have to put this in a post-frame callback because otherwise the
@@ -150,13 +168,17 @@ class _IntroPageState extends State<IntroPage> {
           Text("Checking if the LLM is installed..."),
           SizedBox(height: 20),
           SizedBox(
-            width: 64,
-            height: 64,
-            child: CircularProgressIndicator(color: DEEP_RED_BRAND_COLOR),
+            width: 48,
+            height: 48,
+            child: CircularProgressIndicator(
+              color: Theme.of(context).colorScheme.primary,
+              strokeCap: StrokeCap.round,
+            ),
           ),
         ],
       );
-    } else if (downloadsDone || !Platform.isAndroid) { // Download complete - initialise LLM
+    } else if (downloadsDone || !Platform.isAndroid) {
+      // Download complete - initialise LLM
       // We have some special cases above and below for non-Android - this is
       // because we simply mock the LLM interface on desktop for UI testing
 
@@ -175,23 +197,27 @@ class _IntroPageState extends State<IntroPage> {
             Text("LLM loading (may take a while the first time)..."),
             SizedBox(height: 20),
             SizedBox(
-              width: 64,
-              height: 64,
-            child: CircularProgressIndicator(color: DEEP_RED_BRAND_COLOR),
-            )
+              width: 48,
+              height: 48,
+              child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.primary,
+                strokeCap: StrokeCap.round,
+              ),
+            ),
           ],
         );
-      } else { // LLM initialised - allow user to progress!
+      } else {
+        // LLM initialised - allow user to progress!
         nextButton = ElevatedButton(
           onPressed: () {
             Navigator.pushReplacementNamed(
-                context,
-                '/chat',
-                arguments: SearchPageArguments(
-                    documentsDirectory: Directory(
-                        "${_downloadDir!.path}/documents/"
-                    )
-                )
+              context,
+              '/chat',
+              arguments: SearchPageArguments(
+                documentsDirectory: Directory(
+                  "${_downloadDir!.path}/documents/",
+                ),
+              ),
             );
           },
           style: ElevatedButton.styleFrom(
@@ -204,14 +230,12 @@ class _IntroPageState extends State<IntroPage> {
           ),
           child: const Text(
             'Start chat',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         );
       }
-    } else if (!downloadsStarted) { // Download not yet started - prompt license
+    } else if (!downloadsStarted) {
+      // Download not yet started - prompt license
       nextButton = ElevatedButton(
         onPressed: () async {
           var accepted = await promptLicense(context);
@@ -225,35 +249,36 @@ class _IntroPageState extends State<IntroPage> {
           padding: const EdgeInsets.all(20),
           backgroundColor: DEEP_RED_BRAND_COLOR,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0),
+            borderRadius: BorderRadius.circular(50),
           ),
           elevation: 2,
         ),
         child: const Text(
           'Download models',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       );
     } else {
       double prog = progress;
-      nextButton = Column(children: [
-        Text("Downloading models (${(prog * 100).toStringAsFixed(2)}%)"),
-        SizedBox(height: 20),
-        LinearProgressIndicator(value: progress, color: DEEP_RED_BRAND_COLOR)
-      ]);
+      nextButton = Column(
+        children: [
+          Text("Downloading models (${(prog * 100).toStringAsFixed(2)}%)"),
+          SizedBox(height: 20),
+          LinearProgressIndicator(
+            value: progress,
+            color: Theme.of(context).colorScheme.primary,
+            borderRadius: BorderRadius.all(Radius.circular(50)),
+          ),
+        ],
+      );
     }
 
     // Build initial UI
     return Theme(
       data: ThemeData(
-        textTheme: TextTheme.of(context).merge(
-            TextTheme(
-                bodyMedium: TextStyle(color: Colors.grey[700])
-            ),
-        )
+        textTheme: TextTheme.of(
+          context,
+        ).merge(TextTheme(bodyMedium: TextStyle(color: Colors.grey[700]))),
       ),
       child: Scaffold(
         body: SafeArea(
@@ -264,7 +289,10 @@ class _IntroPageState extends State<IntroPage> {
                 SliverFillRemaining(
                   hasScrollBody: false,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 28.0, vertical: 24.0),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 28.0,
+                      vertical: 24.0,
+                    ),
                     child: Center(
                       child: ConstrainedBox(
                         constraints: BoxConstraints(maxWidth: 400),
@@ -284,17 +312,20 @@ class _IntroPageState extends State<IntroPage> {
                                   const SizedBox(height: 24),
                                   Text(
                                     'Welcome to MAM*AI',
-                                    style: TextStyle(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold,
-                                      color: DEEP_RED_BRAND_COLOR,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.bold,
+                                          color: DEEP_RED_BRAND_COLOR,
+                                        ),
                                     textAlign: TextAlign.center,
                                   ),
                                   const SizedBox(height: 12),
                                   Text(
                                     'An edge-based AI search application designed to support nurses and midwives in Zanzibar in neonatal care. It offers fully offline, on-device functionality and medical guideline-based answers through RAG & finetuning for reliable, private, and context-aware care.',
-                                    textAlign: TextAlign.left,
+                                    textAlign: TextAlign.justify,
                                   ),
                                 ],
                               ),
@@ -306,7 +337,8 @@ class _IntroPageState extends State<IntroPage> {
                               children: [
                                 Text(
                                   'In partnership with',
-                                  style: TextStyle(fontSize: 16),
+                                  style: Theme.of(context).textTheme.titleMedium
+                                      ?.copyWith(fontSize: 16),
                                   textAlign: TextAlign.center,
                                 ),
                                 const SizedBox(height: 5),
@@ -318,8 +350,14 @@ class _IntroPageState extends State<IntroPage> {
                                     // Partner logos
                                     Image.asset('images/epfl.png', height: 20),
                                     Image.asset('images/light.png', height: 25),
-                                    Image.asset('images/swiss_tph.png', height: 25),
-                                    Image.asset('images/d-tree.png', height: 25),
+                                    Image.asset(
+                                      'images/swiss_tph.png',
+                                      height: 25,
+                                    ),
+                                    Image.asset(
+                                      'images/d-tree.png',
+                                      height: 25,
+                                    ),
                                     // Add more partners as needed
                                   ],
                                 ),
@@ -334,8 +372,8 @@ class _IntroPageState extends State<IntroPage> {
                       ),
                     ),
                   ),
-                )
-              ]
+                ),
+              ],
             ),
           ),
         ),
@@ -349,81 +387,73 @@ Future<bool?> promptLicense(BuildContext context) {
   bool openedGemmaUsagePolicy = false;
 
   return showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return StatefulBuilder(builder: (context, setState) {
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
           return AlertDialog(
             title: const Text('Accept Gemma3n license'),
             content: ConstrainedBox(
               constraints: BoxConstraints(maxWidth: 500),
               child: Column(
-                  mainAxisSize: MainAxisSize.min  ,
-                  children: [
-                    Text(
-                        "Please read and accept Gemma3n's license and prohibited usage policy."),
-                    SizedBox(height: 30),
-                    Text(
-                        "Gemma is provided under and subject to the Gemma Terms of Use found at"),
-                    SizedBox(height: 15),
-                    InkWell(
-                      child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            "ai.google.dev/gemma/terms",
-                            style: TextStyle(
-                              color: Colors.blue,
-                              decoration: TextDecoration.underline,
-                            ),
-                          )
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Please read and accept Gemma3n's license and prohibited usage policy.",
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    "Gemma is provided under and subject to the Gemma Terms of Use found at",
+                  ),
+                  SizedBox(height: 15),
+                  InkWell(
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        "ai.google.dev/gemma/terms",
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary,
+                          decoration: TextDecoration.underline,
+                        ),
                       ),
-                      onTap: () {
-                        setState(() {
-                          openedGemmaTos = true;
-                        });
-                        launchUrlString("https://ai.google.dev/gemma/terms");
-                      },
                     ),
-                    InkWell(
-                      child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            "Gemma3n usage policy",
-                            style: TextStyle(
-                              color: Colors.blue,
-                              decoration: TextDecoration.underline,
-                            ),
-                          )
+                    onTap: () {
+                      setState(() {
+                        openedGemmaTos = true;
+                      });
+                      launchUrlString("https://ai.google.dev/gemma/terms");
+                    },
+                  ),
+                  InkWell(
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        "Gemma3n usage policy",
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary,
+                          decoration: TextDecoration.underline,
+                        ),
                       ),
-                      onTap: () {
-                        setState(() {
-                          openedGemmaUsagePolicy = true;
-                        });
+                    ),
+                    onTap: () {
+                      setState(() {
+                        openedGemmaUsagePolicy = true;
+                      });
 
-                        launchUrlString(
-                            "https://ai.google.dev/gemma/prohibited_use_policy"
-                        );
-                      },
-                    ),
-                  ]
+                      launchUrlString(
+                        "https://ai.google.dev/gemma/prohibited_use_policy",
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
             actions: <Widget>[
               TextButton(
-                style: TextButton.styleFrom(textStyle: Theme
-                    .of(context)
-                    .textTheme
-                    .labelLarge),
-                onPressed: (openedGemmaUsagePolicy && openedGemmaTos)
-                    ? () => Navigator.of(context).pop(true)
-                    : null,
-                child: const Text('Accept'),
-              ),
-              TextButton(
-                style: TextButton.styleFrom(textStyle: Theme
-                    .of(context)
-                    .textTheme
-                    .labelLarge),
+                style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.labelLarge,
+                ),
                 child: const Text('Deny'),
                 onPressed: () {
                   openedGemmaTos = false;
@@ -431,16 +461,31 @@ Future<bool?> promptLicense(BuildContext context) {
                   Navigator.of(context).pop(false);
                 },
               ),
+              TextButton(
+                style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.labelLarge,
+                ),
+                onPressed: (openedGemmaUsagePolicy && openedGemmaTos)
+                    ? () => Navigator.of(context).pop(true)
+                    : null,
+                child: const Text('Accept'),
+              ),
             ],
           );
-        });
-      });
+        },
+      );
+    },
+  );
 }
 
 class DownloadInProgress {
-    int total;
-    int current;
-    bool finished;
+  int total;
+  int current;
+  bool finished;
 
-    DownloadInProgress({required this.total, required this.current, required this.finished});
+  DownloadInProgress({
+    required this.total,
+    required this.current,
+    required this.finished,
+  });
 }

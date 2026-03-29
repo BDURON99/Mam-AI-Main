@@ -4,9 +4,6 @@ import 'package:app/screens/pdf_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:markdown_widget/markdown_widget.dart';
-import 'dart:developer' as developer;
-
-import '../theme.dart';
 
 const DEEP_RED_BRAND_COLOR = Color.fromARGB(255, 170, 43, 66);
 
@@ -147,22 +144,47 @@ class _SearchPageState extends State<SearchPage> {
     return Material(
       child: Scaffold(
         appBar: AppBar(
-          toolbarHeight: 80,
+          toolbarHeight: 88,
           shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(36)),
           ),
           title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: Colors.white,
-                child: Image.asset('images/logo-white.png', height: 42),
+              Column(
+                children: [
+                  CircleAvatar(
+                    radius: 32,
+                    backgroundColor: Colors.white,
+                    child: Image.asset('images/logo-white.png', height: 64),
+                  ),
+                  SizedBox(height: 16),
+                ],
               ),
               SizedBox(width: 10),
-              const Text(
-                'MAM*AI Clinical Search',
-                style: TextStyle(color: Colors.white),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 0,
+                children: [
+                  Text(
+                    'MAM*AI',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
+                  Text(
+                    'Clinical Search',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontSize: 22,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                ],
               ),
             ],
           ),
@@ -170,112 +192,206 @@ class _SearchPageState extends State<SearchPage> {
           backgroundColor: DEEP_RED_BRAND_COLOR,
         ),
         body: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.only(
+            top: 24, // TODO: replace by 0 if move search bar down again
+            bottom: 24,
+            left: 24,
+            right: 24,
+          ),
           child: Center(
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 2 / 3,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SearchAnchor(
-                    shrinkWrap: true,
-                    searchController: controller,
-                    viewOnSubmitted: onSubmit,
-                    builder:
-                        (BuildContext context, SearchController controller) {
-                          return SearchBar(
-                            constraints: const BoxConstraints(
-                              minWidth: 360.0,
-                              minHeight: 56.0,
-                            ),
-                            leading: Padding(
-                              padding: const EdgeInsets.only(
-                                left: 8.0,
-                                top: 12.0,
-                                right: 0.0,
-                                bottom: 8.0,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Center(
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 2 / 3,
+                    child: SearchAnchor(
+                      shrinkWrap: true,
+                      searchController: controller,
+                      viewOnSubmitted: onSubmit,
+                      viewBackgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.surface,
+                      builder:
+                          (BuildContext context, SearchController controller) {
+                            return SearchBar(
+                              constraints: const BoxConstraints(
+                                minWidth: 360.0,
+                                minHeight: 56.0,
                               ),
-                              child: Icon(Icons.search),
-                            ),
-                            controller: controller,
-                            hintText: "Search in medical guidelines...",
-                            onSubmitted: onSubmit,
-                            onTap: controller.openView,
-                            onChanged: (_) => controller.openView(),
-                          );
-                        },
-                    suggestionsBuilder:
-                        (BuildContext context, SearchController controller) {
-                          RegExp regex = RegExp(
-                            RegExp.escape(controller.text.toLowerCase()),
-                          );
-                          return history
-                              .map(
-                                (text) => SearchSuggestionTile(
-                                  text,
-                                  SuggestionType.history,
-                                  onPressed: onSubmit,
+                              backgroundColor: WidgetStateProperty.all(
+                                Theme.of(
+                                  context,
+                                ).colorScheme.surfaceContainerLowest,
+                              ),
+
+                              elevation: WidgetStatePropertyAll(0),
+                              side: WidgetStateProperty.resolveWith((states) {
+                                if (states.contains(WidgetState.focused)) {
+                                  return BorderSide(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                    width: 1.5,
+                                  );
+                                }
+                                return BorderSide(
+                                  color: Theme.of(context).colorScheme.outline,
+                                  width: 1,
+                                );
+                              }),
+                              leading: Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 8.0,
+                                  top: 12.0,
+                                  right: 0.0,
+                                  bottom: 8.0,
                                 ),
-                              )
-                              .followedBy(
-                                examples.map(
+                                child: Icon(
+                                  Icons.search,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                              controller: controller,
+                              hintText: "Search in medical guidelines...",
+                              onSubmitted: onSubmit,
+                              onTap: controller.openView,
+                              onChanged: (_) => controller.openView(),
+                            );
+                          },
+
+                      suggestionsBuilder:
+                          (BuildContext context, SearchController controller) {
+                            RegExp regex = RegExp(
+                              RegExp.escape(controller.text.toLowerCase()),
+                            );
+                            return history
+                                .map(
                                   (text) => SearchSuggestionTile(
                                     text,
-                                    SuggestionType.example,
+                                    SuggestionType.history,
                                     onPressed: onSubmit,
                                   ),
-                                ),
-                              )
-                              .where(
-                                (tile) =>
-                                    regex.hasMatch(tile.text.toLowerCase()),
-                              )
-                              .toList();
-                        },
-                  ),
-                  const SizedBox(height: 16),
-
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: (_searchedBefore)
-                          ? SearchOutput(
-                              summary: _latestMessage,
-                              retrievedDocuments: _retrievedDocuments,
-                            )
-                          : Container(
-                              margin: const EdgeInsets.only(bottom: 20),
-                              child: Wrap(
-                                alignment: WrapAlignment.center,
-                                spacing: 5,
-                                runSpacing: 5,
-                                children: history
-                                    .map(
-                                      (text) => SearchSuggestionChip(
-                                        text,
-                                        SuggestionType.history,
-                                        onPressed: onSubmit,
-                                      ),
-                                    )
-                                    .followedBy(
-                                      examples.map(
-                                        (text) => SearchSuggestionChip(
-                                          text,
-                                          SuggestionType.example,
-                                          onPressed: onSubmit,
-                                        ),
-                                      ),
-                                    )
-                                    .toList(),
-                              ),
-                            ),
+                                )
+                                .followedBy(
+                                  examples.map(
+                                    (text) => SearchSuggestionTile(
+                                      text,
+                                      SuggestionType.example,
+                                      onPressed: onSubmit,
+                                    ),
+                                  ),
+                                )
+                                .where(
+                                  (tile) =>
+                                      regex.hasMatch(tile.text.toLowerCase()),
+                                )
+                                .toList();
+                          },
                     ),
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 8),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Center(
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 2 / 3,
+                        child: (_searchedBefore)
+                            ? SearchOutput(
+                                summary: _latestMessage,
+                                retrievedDocuments: _retrievedDocuments,
+                              )
+                            : Container(
+                                margin: const EdgeInsets.only(bottom: 20),
+                                child: Wrap(
+                                  alignment: WrapAlignment.center,
+                                  spacing: 5,
+                                  runSpacing: 5,
+                                  children: history
+                                      .map(
+                                        (text) => SearchSuggestionChip(
+                                          text,
+                                          SuggestionType.history,
+                                          onPressed: onSubmit,
+                                        ),
+                                      )
+                                      .followedBy(
+                                        examples.map(
+                                          (text) => SearchSuggestionChip(
+                                            text,
+                                            SuggestionType.example,
+                                            onPressed: onSubmit,
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
+                                ),
+                              ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                //const SizedBox(height: 8), //TODO: add if search bar move up again
+              ],
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Animated "Generating response..." indicator shown while loading
+class _ThinkingIndicator extends StatefulWidget {
+  final bool hasDocs;
+  const _ThinkingIndicator({required this.hasDocs});
+
+  @override
+  State<_ThinkingIndicator> createState() => _ThinkingIndicatorState();
+}
+
+class _ThinkingIndicatorState extends State<_ThinkingIndicator>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final label = 'Generating response';
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) {
+          final dots = '.' * ((_controller.value * 3).floor() + 1);
+          return Text(
+            '$label$dots',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.secondary,
+              fontSize: 16,
+              fontStyle: FontStyle.italic,
+            ),
+          );
+        },
       ),
     );
   }
@@ -305,8 +421,11 @@ class SearchSuggestionTile extends StatelessWidget {
 
     switch (type) {
       case SuggestionType.example:
-        textColor = DEEP_RED_BRAND_COLOR;
-        icon = Icon(Icons.auto_awesome, color: textColor);
+        textColor = Theme.of(context).colorScheme.onSurface;
+        icon = Icon(
+          Icons.auto_awesome,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        );
         break;
 
       case SuggestionType.history:
@@ -348,26 +467,27 @@ class SearchSuggestionChip extends StatelessWidget {
           Icons.auto_awesome,
           color: Theme.of(context).colorScheme.primary,
         );
-        bgColor = Theme.of(context).colorScheme.surface;
+        bgColor = Theme.of(context).colorScheme.surfaceContainerLow;
         textColor = Theme.of(context).colorScheme.primary;
         borderColor = Theme.of(context).colorScheme.primary;
         break;
 
       case SuggestionType.history:
-        textColor = Colors.black.withAlpha(166);
+        textColor = Theme.of(context).colorScheme.onSurface;
         icon = Icon(Icons.history, color: textColor);
         bgColor = null;
-        borderColor = Colors.grey;
+        borderColor = Theme.of(context).colorScheme.outline;
         break;
     }
 
     return ChipTheme(
       data: ChipThemeData(
         labelStyle: TextStyle(color: textColor, fontWeight: FontWeight.w500),
+        padding: EdgeInsets.all(4),
         backgroundColor: bgColor,
         shape: RoundedRectangleBorder(
           side: BorderSide(color: borderColor),
-          borderRadius: BorderRadiusGeometry.circular(12),
+          borderRadius: BorderRadiusGeometry.circular(8),
         ),
       ),
       child: ActionChip(
@@ -409,108 +529,207 @@ class RetrievedDocument {
   }
 }
 
+/// Guidelines widget
+class ExpandableDocumentCard extends StatefulWidget {
+  final RetrievedDocument doc;
+
+  const ExpandableDocumentCard({super.key, required this.doc});
+
+  @override
+  State<ExpandableDocumentCard> createState() => _ExpandableDocumentCardState();
+}
+
+class _ExpandableDocumentCardState extends State<ExpandableDocumentCard> {
+  bool _isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final doc = widget.doc;
+
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(32)),
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.secondaryContainer,
+        ),
+      ),
+      elevation: 0,
+      color: Theme.of(context).colorScheme.secondaryContainer,
+      child: InkWell(
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            '/pdf',
+            arguments: PdfViewArguments(
+              path: doc.filePath,
+              title: doc.documentName,
+              page: doc.page,
+            ),
+          );
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            ListTile(
+              leading: Icon(
+                Icons.book_outlined,
+                color: Theme.of(context).colorScheme.onSecondaryContainer,
+              ),
+              title: Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: "${doc.documentName.replaceAll('_', ' ')}",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSecondaryContainer,
+                      ),
+                    ),
+                    TextSpan(
+                      text: "   Page ${doc.page}",
+                      style: TextStyle(
+                        fontWeight: FontWeight.normal,
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.surface,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              trailing: Icon(
+                Icons.open_in_new,
+                color: Theme.of(context).colorScheme.onSecondaryContainer,
+              ),
+              contentPadding: const EdgeInsetsDirectional.only(
+                start: 24.0,
+                top: 8,
+                end: 24.0,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsetsDirectional.only(
+                start: 24.0,
+                top: 0,
+                end: 24.0,
+                bottom: 16.0,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  _isExpanded
+                      ? MarkdownBlock(
+                          data: doc.text,
+                          config: MarkdownConfig(
+                            configs: [
+                              PConfig(
+                                textStyle: TextStyle(
+                                  fontSize: 14,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSecondaryContainer,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : const SizedBox(height: 0),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: InkWell(
+                      onTap: () => setState(() => _isExpanded = !_isExpanded),
+                      borderRadius: BorderRadius.circular(50),
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          left: 2,
+                          top: 4,
+                          bottom: 4,
+                          right: 8,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              _isExpanded
+                                  ? Icons.expand_less
+                                  : Icons.expand_more,
+                              size: 24,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHigh,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              _isExpanded ? 'Hide extract' : 'See extract',
+                              style: TextStyle(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.surfaceContainerHigh,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 /// The main widget for the search summary
-class SearchOutput extends StatelessWidget {
+class SearchOutput extends StatefulWidget {
   const SearchOutput({
     super.key,
     required this.summary,
     required this.retrievedDocuments,
   });
-
   final String? summary;
   final List<RetrievedDocument> retrievedDocuments;
 
   @override
+  State<SearchOutput> createState() => SearchOutputState();
+}
+
+class SearchOutputState extends State<SearchOutput> {
+  @override
   Widget build(BuildContext context) {
-    if (summary == null) {
-      return Center(
-        child: SizedBox(
-          width: 75,
-          height: 75,
-          child: CircularProgressIndicator(color: DEEP_RED_BRAND_COLOR),
-        ),
-      );
+    if (widget.summary == null) {
+      return _ThinkingIndicator(hasDocs: widget.summary == null);
+      // Center(
+      //   child: SizedBox(
+      //     width: 48,
+      //     height: 48,
+      //     child: CircularProgressIndicator(
+      //       color: Theme.of(context).colorScheme.primary,
+      //       strokeCap: StrokeCap.round,
+      //     ),
+      //   ),
+      // );
     }
 
-    final retrievedDocs = retrievedDocuments.map((doc) {
-      bool _expanded = false; // put this in your State
-      return Card(
-        surfaceTintColor: Theme.of(context).colorScheme.surfaceBright,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(16)),
-        ),
-        elevation: 0,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.book),
-              title: Text("${doc.documentName} - page ${doc.page}"),
-              contentPadding: const EdgeInsetsDirectional.only(
-                start: 16.0,
-                end: 24.0,
-              ),
-
-              // :point_down: trailing: navigation + chevron
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.open_in_new),
-                    onPressed: () {
-                      Navigator.pushNamed(
-                        context,
-                        '/pdf',
-                        arguments: PdfViewArguments(
-                          path: doc.filePath,
-                          title: doc.documentName,
-                          page: doc.page,
-                        ),
-                      );
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
-                    onPressed: () {
-                      _expanded = !_expanded;
-                    },
-                  ),
-                ],
-              ),
-              // :point_down: tap tile to expand
-            ),
-
-            // :point_down: expandable content
-            AnimatedCrossFade(
-              duration: const Duration(milliseconds: 200),
-              crossFadeState: _expanded
-                  ? CrossFadeState.showSecond
-                  : CrossFadeState.showFirst,
-              firstChild: const SizedBox.shrink(),
-              secondChild: Padding(
-                padding: const EdgeInsetsDirectional.only(
-                  start: 16.0,
-                  end: 24.0,
-                  bottom: 16.0,
-                ),
-                child: MarkdownBlock(
-                  data: doc.text,
-                  config: MarkdownConfig(
-                    configs: [PConfig(textStyle: TextStyle(fontSize: 12))],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    });
+    final retrievedDocs = widget.retrievedDocuments.map((doc) {
+      return ExpandableDocumentCard(doc: doc);
+    }).toList();
 
     return Column(
       children: [
         Card(
-          elevation: 2.0,
-          surfaceTintColor: Theme.of(context).colorScheme.surfaceBright,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(32)),
+          ),
+          color: Theme.of(context).colorScheme.surfaceContainer,
           shadowColor: Colors.white,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -519,39 +738,55 @@ class SearchOutput extends StatelessWidget {
                 leading: Icon(
                   Icons.auto_awesome,
                   color: Theme.of(context).colorScheme.primary,
-                  size: 40,
+                  size: 32,
                 ),
-                title: const Text(
+                title: Text(
                   'Generated summary',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                 ),
                 subtitle: RichText(
                   text: TextSpan(
-                    text: '⚠️ Read with care. ',
-                    style: DefaultTextStyle.of(context).style,
+                    text: 'Read with care. ',
+                    style: TextStyle(
+                      fontWeight: FontWeight.normal,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                     children: [
                       TextSpan(
-                        text: 'AI can make serious mistakes! ⚠️',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        text: 'AI can make serious mistakes!',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                       ),
                     ],
                   ),
                 ),
                 contentPadding: const EdgeInsetsDirectional.only(
-                  start: 16.0,
+                  start: 24.0,
+                  top: 8,
                   end: 24.0,
                 ),
               ),
               Padding(
                 padding: EdgeInsetsDirectional.only(
-                  start: 16.0,
+                  start: 24.0,
                   end: 24.0,
                   bottom: 16.0,
                 ),
                 child: MarkdownBlock(
-                  data: summary!,
+                  data: widget.summary!,
                   config: MarkdownConfig(
-                    configs: [PConfig(textStyle: TextStyle(fontSize: 18))],
+                    configs: [
+                      PConfig(
+                        textStyle: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

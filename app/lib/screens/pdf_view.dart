@@ -23,7 +23,10 @@ class PdfView extends StatelessWidget {
             borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
           ),
           iconTheme: IconThemeData(color: Colors.white),
-          title: Text(args.title, style: const TextStyle(color: Colors.white)),
+          title: Text(
+            args.title.replaceAll('_', ' '),
+            style: const TextStyle(color: Colors.white),
+          ),
           centerTitle: true,
           backgroundColor: DEEP_RED_BRAND_COLOR,
         ),
