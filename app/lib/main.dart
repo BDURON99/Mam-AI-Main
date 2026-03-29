@@ -2,6 +2,8 @@ import 'package:app/screens/pdf_view.dart';
 import 'package:app/screens/search_page.dart';
 import 'package:app/screens/intro_page.dart';
 import 'package:flutter/material.dart';
+import 'theme.dart';
+import 'util.dart';
 
 void main() {
   runApp(const ChatApp());
@@ -12,23 +14,17 @@ class ChatApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TextTheme textTheme = createTextTheme(
+      context,
+      "Inter",
+      "Plus Jakarta Sans",
+    );
+    
+    MaterialTheme theme = MaterialTheme(textTheme);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Mam AI Chat',
-      theme: ThemeData(
-          colorSchemeSeed: Color(0xffcc5500),
-          useMaterial3: true,
-          textTheme: TextTheme(
-            bodyMedium: TextStyle(
-              fontSize: 18,
-              height: 1.5,
-            ),
-            labelLarge: TextStyle(
-              letterSpacing: 1.2,
-              fontSize: 20,
-            ),
-          ),
-      ),
+      theme: theme.light(),
       home: const IntroPage(),
       routes: {
         '/chat': (context) => const SearchPage(),
