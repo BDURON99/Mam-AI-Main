@@ -19,6 +19,19 @@ since the underlying inference library needs real hardware.
 
 You can also build it yourself with `flutter build apk` in the `app/` directory.
 
+To build and run the project you need to make sure that the `build/objectbox-models/default.json` directory exists even if the rest of the build directory is empty. The `default.json` file contains information about the database schema, essential for the app to access the data from `data.mdb` and `lock.mdb`. Running `flutter clean` will remove it, so you need to manually recreate the directory and add the file (the stored version on GitHub). DO NOT regenerate this file. 
+
+To run the project (and see live edits):
+```## from /app 
+flutter pub get 
+flutter build apk
+## from /rag 
+adb push db /storage/emulated/0/Android/data/com.example.app/files
+## from  /
+adb push documents /storage/emulated/0/Android/data/com.example.app/files
+## from /app 
+flutter run```
+
 ## Reproduction instructions
 
 This is a rough sketch of how you could reproduce what we created in this project.
