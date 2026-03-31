@@ -143,6 +143,7 @@ class _SearchPageState extends State<SearchPage> {
 
     return Material(
       child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
         appBar: AppBar(
           toolbarHeight: 88,
           shape: const RoundedRectangleBorder(
@@ -220,43 +221,65 @@ class _SearchPageState extends State<SearchPage> {
                                 minWidth: 360.0,
                                 minHeight: 56.0,
                               ),
-                              backgroundColor: WidgetStateProperty.all(
-                                Theme.of(
-                                  context,
-                                ).colorScheme.surfaceContainerLowest,
+                              padding: WidgetStatePropertyAll(
+                                EdgeInsetsDirectional.only(start: 12, end: 8),
                               ),
-
+                              backgroundColor: WidgetStateProperty.all(
+                                Theme.of(context).colorScheme.surface,
+                              ),
                               elevation: WidgetStatePropertyAll(0),
                               side: WidgetStateProperty.resolveWith((states) {
                                 if (states.contains(WidgetState.focused)) {
                                   return BorderSide(
                                     color: Theme.of(
                                       context,
-                                    ).colorScheme.primary,
+                                    ).colorScheme.surfaceDim,
                                     width: 1.5,
                                   );
                                 }
                                 return BorderSide(
-                                  color: Theme.of(context).colorScheme.outline,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.surfaceDim,
                                   width: 1,
                                 );
                               }),
-                              leading: Padding(
-                                padding: const EdgeInsets.only(
-                                  left: 8.0,
-                                  top: 12.0,
-                                  right: 0.0,
-                                  bottom: 8.0,
+                              trailing: [
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primaryContainer,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    padding: const EdgeInsets.all(10),
+                                    child: Icon(
+                                      Icons.search,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onPrimaryContainer,
+                                    ),
+                                  ),
                                 ),
-                                child: Icon(
-                                  Icons.search,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurfaceVariant,
-                                ),
-                              ),
+                              ],
                               controller: controller,
                               hintText: "Search in medical guidelines...",
+                              hintStyle: WidgetStatePropertyAll(
+                                TextStyle(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
+                                ),
+                              ),
+                              textStyle: WidgetStatePropertyAll(
+                                TextStyle(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
+                                ),
+                              ),
                               onSubmitted: onSubmit,
                               onTap: controller.openView,
                               onChanged: (_) => controller.openView(),
@@ -421,10 +444,10 @@ class SearchSuggestionTile extends StatelessWidget {
 
     switch (type) {
       case SuggestionType.example:
-        textColor = Theme.of(context).colorScheme.onSurface;
+        textColor = Theme.of(context).colorScheme.primary;
         icon = Icon(
           Icons.auto_awesome,
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
+          color: Theme.of(context).colorScheme.primary,
         );
         break;
 
@@ -548,13 +571,11 @@ class _ExpandableDocumentCardState extends State<ExpandableDocumentCard> {
 
     return Card(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(32)),
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.secondaryContainer,
-        ),
+        borderRadius: BorderRadius.all(Radius.circular(24)),
+        side: BorderSide(color: Theme.of(context).colorScheme.surfaceDim),
       ),
       elevation: 0,
-      color: Theme.of(context).colorScheme.secondaryContainer,
+      color: Theme.of(context).colorScheme.surfaceContainerLowest,
       child: InkWell(
         onTap: () {
           Navigator.pushNamed(
@@ -573,7 +594,7 @@ class _ExpandableDocumentCardState extends State<ExpandableDocumentCard> {
             ListTile(
               leading: Icon(
                 Icons.book_outlined,
-                color: Theme.of(context).colorScheme.onSecondaryContainer,
+                color: Theme.of(context).colorScheme.secondary,
               ),
               title: Text.rich(
                 TextSpan(
@@ -583,9 +604,7 @@ class _ExpandableDocumentCardState extends State<ExpandableDocumentCard> {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSecondaryContainer,
+                        color: Theme.of(context).colorScheme.secondary,
                       ),
                     ),
                     TextSpan(
@@ -593,7 +612,7 @@ class _ExpandableDocumentCardState extends State<ExpandableDocumentCard> {
                       style: TextStyle(
                         fontWeight: FontWeight.normal,
                         fontSize: 12,
-                        color: Theme.of(context).colorScheme.surface,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -601,7 +620,7 @@ class _ExpandableDocumentCardState extends State<ExpandableDocumentCard> {
               ),
               trailing: Icon(
                 Icons.open_in_new,
-                color: Theme.of(context).colorScheme.onSecondaryContainer,
+                color: Theme.of(context).colorScheme.secondaryContainer,
               ),
               contentPadding: const EdgeInsetsDirectional.only(
                 start: 24.0,
@@ -630,7 +649,7 @@ class _ExpandableDocumentCardState extends State<ExpandableDocumentCard> {
                                   fontSize: 14,
                                   color: Theme.of(
                                     context,
-                                  ).colorScheme.onSecondaryContainer,
+                                  ).colorScheme.onSurface,
                                 ),
                               ),
                             ],
@@ -644,10 +663,10 @@ class _ExpandableDocumentCardState extends State<ExpandableDocumentCard> {
                       borderRadius: BorderRadius.circular(50),
                       child: Padding(
                         padding: const EdgeInsets.only(
-                          left: 2,
-                          top: 4,
-                          bottom: 4,
-                          right: 8,
+                          left: 8,
+                          top: 6,
+                          bottom: 6,
+                          right: 16,
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -659,7 +678,7 @@ class _ExpandableDocumentCardState extends State<ExpandableDocumentCard> {
                               size: 24,
                               color: Theme.of(
                                 context,
-                              ).colorScheme.surfaceContainerHigh,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                             const SizedBox(width: 4),
                             Text(
@@ -667,7 +686,7 @@ class _ExpandableDocumentCardState extends State<ExpandableDocumentCard> {
                               style: TextStyle(
                                 color: Theme.of(
                                   context,
-                                ).colorScheme.surfaceContainerHigh,
+                                ).colorScheme.onSurfaceVariant,
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -729,8 +748,9 @@ class SearchOutputState extends State<SearchOutput> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(32)),
           ),
-          color: Theme.of(context).colorScheme.surfaceContainer,
+          color: Theme.of(context).colorScheme.surfaceContainerLowest,
           shadowColor: Colors.white,
+
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -765,15 +785,15 @@ class SearchOutputState extends State<SearchOutput> {
                   ),
                 ),
                 contentPadding: const EdgeInsetsDirectional.only(
-                  start: 24.0,
+                  start: 8,// 24.0,
                   top: 8,
-                  end: 24.0,
+                  end: 8, //24.0,
                 ),
               ),
               Padding(
                 padding: EdgeInsetsDirectional.only(
-                  start: 24.0,
-                  end: 24.0,
+                  start: 8,//24.0,
+                  end: 8, //24.0,
                   bottom: 16.0,
                 ),
                 child: MarkdownBlock(

@@ -171,7 +171,7 @@ class _IntroPageState extends State<IntroPage> {
             width: 48,
             height: 48,
             child: CircularProgressIndicator(
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.primaryContainer,
               strokeCap: StrokeCap.round,
             ),
           ),
@@ -338,7 +338,7 @@ class _IntroPageState extends State<IntroPage> {
                                 Text(
                                   'In partnership with',
                                   style: Theme.of(context).textTheme.titleMedium
-                                      ?.copyWith(fontSize: 16),
+                                      ?.copyWith(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
                                   textAlign: TextAlign.center,
                                 ),
                                 const SizedBox(height: 5),
